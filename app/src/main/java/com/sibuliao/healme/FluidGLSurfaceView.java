@@ -3,6 +3,7 @@ package com.sibuliao.healme;
 import android.opengl.GLSurfaceView;
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 
 public class FluidGLSurfaceView extends GLSurfaceView {
@@ -38,25 +39,32 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                Log.d("addF", "DOWN ");
                 x0 = x;
                 y0 = y;
                 queueEvent(new Runnable() {
                     @Override
                     public void run() {
-                        renderer.addDensity(x, y, 225);
+                        renderer.addDensity(x, y, 500);
+                        //renderer.addDensity(100, 100, 500);
                     }
                 });
 
             case MotionEvent.ACTION_MOVE:
+                Log.d("addF", "MOVE " + x0 + " -> " + x + ", " + y0 + " -> " + y);
                 queueEvent(new Runnable() {
                     @Override
                     public void run() {
-                        renderer.addDensity(x, y, 225);
+                        renderer.addDensity(x, y, 500);
+                        Log.d("addF", "MOVE " + x0 + " -> " + x + ", " + y0 + " -> " + y);
+
                         renderer.addForce(x0, y0, x, y);
+                        x0 = x;
+                        y0 = y;
+                        //renderer.addDensity(100, 100, 500);
+                        //renderer.addForce(100, 100, x, y);
                     }
                 });
-                x0 = x;
-                y0 = y;
             case MotionEvent.ACTION_UP:
 
         }

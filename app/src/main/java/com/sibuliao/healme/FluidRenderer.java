@@ -3,6 +3,7 @@ package com.sibuliao.healme;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
+import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -44,6 +45,8 @@ public class FluidRenderer implements GLSurfaceView.Renderer {
     }
 
     public void addForce(float x0, float y0, float x, float y) {
+        Log.d("addF", "MOVE " + x0 + " -> " + x + ", " + y0 + " -> " + y);
+
         FluidLibJNIWrapper.addForce(x0, y0, x, y);
     }
 

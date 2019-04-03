@@ -1,6 +1,10 @@
 #include "Fluid.h"
 
-Fluid::Fluid(int width, int height, int dH) {
+static const int iter = 20;
+
+Fluid::Fluid(GLfloat viscosity, GLfloat diffRate, int width, int height, int dH) {
+    this->viscosity = viscosity;
+    this->diffRate = diffRate;
     this->W = width;
     this->H = height;
     this->dH = dH;
@@ -27,18 +31,61 @@ Fluid::~Fluid() {
     free(s1);
 }
 
-void Fluid::updateForce(long dt) {
+void Fluid::updateVelocity(long dt) {
+    int i = (int)100 / dH;
+    int j = (int)100 / dH;
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity was, %g", u1->y[index(i+1,j+1)]);
+
     addSource(u1->x, sForce->x);
     addSource(u1->y, sForce->y);
+
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity added to, %g", u1->y[index(i+1,j+1)]);
+
+    diffuse(u1->x, u0->x, viscosity, dt, 0);
+    diffuse(u1->y, u0->y, viscosity, dt, 1);
+
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity diffuse to, %g", u0->y[index(i+1,j+1)]);
+
+
+    project(u0, u1);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity projected to, %g", u1->y[index(i+1,j+1)]);
+
+
+    advect(u1->x, u0->x, u1->x, u1->y, dt, 0);
+    advect(u1->y, u0->y, u1->x, u1->y, dt, 1);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity advect to, %g", u0->y[index(i+1,j+1)]);
+
+
+    project(u0, u1);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity should now be, %g", u1->y[index(i+1,j+1)]);
+
 }
 
 void Fluid::updateDensity(long dt) {
+    int i = (int)100 / dH;
+    int j = (int)100 / dH;
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density was, %g", s1[index(i+1,j+1)]);
+
     addSource(s1, sDensity);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density added to, %g", s1[index(i+1,j+1)]);
+
+    diffuse(s1, s0, diffRate, dt, 0);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density diffuse to, %g", s0[index(i+1,j+1)]);
+
+    advect(s0, s1, u1->x, u1->y, dt, 0);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density advect to, %g", s1[index(i+1,j+1)]);
+
 }
 
 void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY) {
+    __android_log_print(ANDROID_LOG_DEBUG, "addF", "was %g", sForce->y[index(i+1,j+1)]);
+    __android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g", amountY);
+
     sForce->x[index(i+1,j+1)] += amountX;
     sForce->y[index(i+1,j+1)] += amountY;
+    __android_log_print(ANDROID_LOG_DEBUG, "addF", "is %g", sForce->y[index(i+1,j+1)]);
+    __android_log_print(ANDROID_LOG_DEBUG, "addF", "__________________________");
+
 }
 
 void Fluid::addDensity(int i, int j, GLfloat amount) {
@@ -49,7 +96,9 @@ GLfloat Fluid::densityAt(int i, int j) {
     return s1[index(i+1,j+1)];
 }
 
-
+GLfloat Fluid::velocityAt(int i, int j) {
+    return u1->y[index(i+1,j+1)];
+}
 
 
 
@@ -102,6 +151,146 @@ void Fluid::addSource(GLfloat* u, GLfloat* source) {
         for (int j = 0; j < H; j++) {
             u[index(i,j)] += source[index(i,j)];
             source[index(i,j)] = 0;
+        }
+    }
+}
+
+void Fluid::diffuse(GLfloat* u0, GLfloat* u1, GLfloat v, long dt, int t) {
+    GLfloat a = v*dt / (dH*dH);
+
+    for (int m = 0; m < iter; m++){
+        for (int i = 1; i < W - 1; i++) {
+            for (int j = 1; j < H - 1; j++) {
+                u1[index(i,j)] = (u0[index(i,j)] - a*(u1[index(i-1,j)] + u1[index(i+1,j)]
+                                                      + u0[index(i,j-1)] + u0[index(i,j+1)])) / (1 + 4*a);
+
+            }
+        }
+        setBoundary(u1, t);
+    }
+}
+
+void Fluid::advect(GLfloat *u0, GLfloat *u1, GLfloat *x, GLfloat *y, long dt, int t) {
+    GLfloat posX, posY;
+    GLfloat posX0, posY0;
+    GLint c_posX0, c_posY0;
+    GLint c_posX1, c_posY1;
+    GLfloat x0, x1;
+    GLfloat y0, y1;
+
+    for (int i = 1; i < W - 1; i++) {
+        for (int j = 1; j < H - 1; j++) {
+            posX0 = i - dt*x[index(i,j)]/dH;
+            posY0 = j - dt*y[index(i,j)]/dH;
+
+            if (posX0 < 0.5)
+                posX0 = 0.5;
+            if (posX0 > W - 1.5)
+                posX0 = W - 1.5f;
+            if (posY0 < 0.5)
+                posY0 = 0.5;
+            if (posY0 > H - 1.5)
+                posY0 = H - 1.5f;
+
+/*
+            if (posX0 < 0)
+                posX0 = 0;
+            if (posX0 > W - 1)
+                posX0 = W - 2;
+            if (posY0 < 0)
+                posY0 = 0;
+            if (posY0 > H - 1)
+                posY0 = H - 2;
+*/
+            c_posX0 = (int)posX0;
+            c_posX1 = c_posX0 + 1;
+            c_posY0 = (int)posY0;
+            c_posY1 = c_posY0 + 1;
+
+            x0 = posX0 - c_posX0;
+            x1 = 1 - x0;
+            y0 = posY0 - c_posY0;
+            y1 = 1 - y0;
+
+            u1[index(i,j)] = x1*(y1*u0[index(c_posX0,c_posY0)]+y0*u0[index(c_posX0,c_posY1)])
+                    + x0*(y1*u0[index(c_posX1,c_posY0)]+y0*u0[index(c_posX1,c_posY1)]);
+        }
+    }
+
+    setBoundary(u1, t);
+}
+
+void Fluid::project(vectorField *u0, vectorField *u1) {
+    GLfloat* divU0 = (GLfloat*)malloc(W*H*sizeof(GLfloat));
+    GLfloat* q = (GLfloat*)malloc(W*H*sizeof(GLfloat));
+
+    for (int i = 1; i < W - 1; i++) {
+        for (int j = 1; j < H - 1; j++) {
+            divU0[index(i,j)] = 0.5f*dH*(u0->x[index(i+1,j)] - u0->x[index(i-1,j)]
+                                         + u0->y[index(i,j+1)] - u0->y[index(i,j-1)]);
+            q[index(i,j)] = 0;
+        }
+    }
+
+    setBoundary(divU0, 2);
+    setBoundary(q, 2);
+
+    for (int m = 0; m < iter; m++) {
+        for (int i = 1; i < W - 1; i++) {
+            for (int j = 1; j < H - 1; j++) {
+                q[index(i,j)] = (q[index(i-1,j)] + q[index(i+1,j)]
+                                 + q[index(i,j-1)] + q[index(i,j+1)] - divU0[index(i,j)]) / 4;
+            }
+        }
+        setBoundary(q, 2);
+    }
+
+    for (int i = 1; i < W - 1; i++) {
+        for (int j = 1; j < H - 1; j++) {
+            u1->x[index(i,j)] = u0->x[index(i,j)] - 0.5f*(q[index(i+1,j)] - q[index(i-1,j)])/dH;
+            u1->y[index(i,j)] = u0->y[index(i,j)] - 0.5f*(q[index(i,j+1)] - q[index(i,j-1)])/dH;
+        }
+    }
+
+    setBoundary(u1->x, 0);
+    setBoundary(u1->y, 1);
+
+    free(divU0);
+    free(q);
+}
+
+void Fluid::setBoundary(GLfloat *f, int fieldType) {
+    // vertical sides
+    for (int j = 0; j < H; j++) {
+        switch(fieldType){
+            case 0:     // x field
+                f[index(0, j)] = -f[index(1,j)];
+                f[index(W-1,j)] = -f[index(W-2,j)];
+                break;
+            case 1:     // y field
+                f[index(0,j)] = f[index(1,j)];
+                f[index(W-1,j)] = f[index(W-2,j)];
+                break;
+            case 2:     // scalar
+                f[index(0,j)] = f[index(1,j)];
+                f[index(W-1,j)] = f[index(W-2,j)];
+        }
+    }
+
+    // horizontal sides
+    for (int i = 0; i < W; i++) {
+        switch(fieldType){
+            case 0:     // x field
+                f[index(i,0)] = f[index(i,1)];
+                f[index(i,H-1)] = f[index(i,H-2)];
+                break;
+            case 1:     // y field
+                f[index(i,0)] = -f[index(i,1)];
+                f[index(i,H-1)] = -f[index(i,H-2)];
+                break;
+            case 2:     // scalar
+                f[index(i,0)] = f[index(i,1)];
+                f[index(i,H-1)] = f[index(i,H-2)];
         }
     }
 }

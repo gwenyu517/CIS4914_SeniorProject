@@ -3,6 +3,8 @@
 
 #include <malloc.h>
 #include <GLES3/gl3.h>
+#include <android/log.h>
+
 
 struct vectorField {
     GLfloat* x;
@@ -11,6 +13,9 @@ struct vectorField {
 
 class Fluid {
 private:
+    GLfloat viscosity;
+    GLfloat diffRate;
+
     int W;      // W = p_width + 2
     int H;      // H = p_height + 2
     int dH;
@@ -28,18 +33,26 @@ private:
     int index(int i, int j);
 
     void addSource(GLfloat* u, GLfloat* source);
+    void diffuse(GLfloat* u0, GLfloat* u1, GLfloat v, long dt, int t);
+    void advect(GLfloat *u0, GLfloat *u1, GLfloat *x, GLfloat *y, long dt, int t);
+    void project(vectorField* u0, vectorField* u1);
+
+    void setBoundary(GLfloat *f, int fieldType);
 
 public:
-    Fluid(int width, int height, int dH);
+    Fluid(GLfloat viscosity, GLfloat diffRate, int width, int height, int dH);
     ~Fluid();
 
-    void updateForce(long dt);
+    void updateVelocity(long dt);
     void updateDensity(long dt);
 
     void addForce(int i, int j, GLfloat amountX, GLfloat amountY);
     void addDensity(int i, int j, GLfloat amount);
 
     GLfloat densityAt(int i, int j);
+
+    // Todo: DELETE
+    GLfloat velocityAt(int i, int j);
 };
 
 

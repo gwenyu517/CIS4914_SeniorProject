@@ -4,7 +4,7 @@
 //#include <malloc.h>
 #include <EGL/egl.h>
 //#include <GLES3/gl3.h>
-#include <android/log.h>
+//#include <android/log.h>
 
 
 static GLuint programObject;
@@ -18,9 +18,11 @@ static GLfloat vVertices[] = {  1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
 
 static GLubyte* pixels;
 static GLint p_width, p_height;
-static GLint dH = 4;
+static GLint dH = 10;
 
 static Fluid* fluid;
+static GLfloat viscosity = 0;
+static GLfloat diffRate = 0.001;
 
 void setGridSize(int width, int height) {
     p_width = width / dH;
@@ -37,7 +39,7 @@ void setGridSize(int width, int height) {
         }
     }
 
-    fluid = new Fluid(p_width, p_height, dH);
+    fluid = new Fluid(viscosity, diffRate, p_width, p_height, dH);
 }
 
 GLuint LoadShader(GLenum type, const char *shaderSrc) {
@@ -185,19 +187,21 @@ void on_surface_created() {
 }
 
 void on_surface_changed(int width, int height) {
-    //glViewport (0, 0, width, height);
-    //eglGetCurrentContext();
+    glViewport (0, 0, width, height);
+    eglGetCurrentContext();
 }
 
 void updateTexture() {
     for (int i = 0; i < p_width; i++){
         for (int j = 0; j < p_height; j++){
             int k = 4* (j*p_width + i);
-
             pixels[k+3] = (GLubyte)fluid->densityAt(i,j);
-
+            //__android_log_print(ANDROID_LOG_DEBUG, "pixels", "[%d, %d] : %d", i, j, pixels[k+3]);
         }
     }
+
+    __android_log_print(ANDROID_LOG_DEBUG, "pixels", "_________________________________________________");
+
 
     glBindTexture(GL_TEXTURE_2D, textureID);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
@@ -206,9 +210,19 @@ void updateTexture() {
 }
 
 void update(long dt) {
-    fluid->updateForce(dt);
+    int i = (int)100/dH;
+    int j = (int)100/dH;
+
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity was, %g", (double)fluid->velocityAt(i, j));
+    fluid->updateVelocity(dt);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity is, %g", (double)fluid->velocityAt(i, j));
+
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density was, %g", (double)fluid->densityAt(i, j));
     fluid->updateDensity(dt);
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density is, %g", (double)fluid->densityAt(i, j));
+
     updateTexture();
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "__________________________________________________");
 }
 
 void drawFrame() {
@@ -256,12 +270,14 @@ void cleanup() {
 void addForce(float x0, float y0, float x, float y) {
     int i = (int)x0 / dH;
     int j = (int)y0 / dH;
-    fluid->addForce(i, j, x-x0, y-y0);
+    __android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g - %g = %g", y, y0, (y - y0));
+    fluid->addForce(i, j, 4*(x-x0), 4*(y-y0));
+
 }
 
 void addDensity(float x, float y, float amount) {
     int i = (int)x / dH;
     int j = (int)y / dH;
-    fluid->addDensity(i, j, amount);
+    fluid->addDensity(i, j, 4*amount);
 }
 
