@@ -206,6 +206,7 @@ void updateTexture() {
 }
 
 void update(long dt) {
+    fluid->updateForce(dt);
     fluid->updateDensity(dt);
     updateTexture();
 }
@@ -250,6 +251,12 @@ void on_draw_frame(long dt) {
 void cleanup() {
     free(pixels);
     delete fluid;
+}
+
+void addForce(float x0, float y0, float x, float y) {
+    int i = (int)x0 / dH;
+    int j = (int)y0 / dH;
+    fluid->addForce(i, j, x-x0, y-y0);
 }
 
 void addDensity(float x, float y, float amount) {

@@ -11,6 +11,6 @@ public class FluidLibJNIWrapper {
     public static native void on_draw_frame(long dt);
     public static native void on_destroy();
 
-
+    public static native void addForce(float x0, float y0, float x, float y);
     public static native void addDensity(float x, float y, float amount);
 }

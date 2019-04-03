@@ -52,6 +52,7 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                     @Override
                     public void run() {
                         renderer.addDensity(x, y, 225);
+                        renderer.addForce(x0, y0, x, y);
                     }
                 });
                 x0 = x;

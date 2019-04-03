@@ -15,8 +15,13 @@ private:
     int H;      // H = p_height + 2
     int dH;
 
-    //vectorField* sForce;
+    vectorField* sForce;
     GLfloat* sDensity;
+
+    vectorField* u0;
+    vectorField* u1;
+
+    GLfloat* s0;
     GLfloat* s1;
 
     void setupGrid();
@@ -28,9 +33,12 @@ public:
     Fluid(int width, int height, int dH);
     ~Fluid();
 
+    void updateForce(long dt);
     void updateDensity(long dt);
+
+    void addForce(int i, int j, GLfloat amountX, GLfloat amountY);
     void addDensity(int i, int j, GLfloat amount);
-    //void addForce(int i, int j, GLfloat amountX, GLfloat amountY);
+
     GLfloat densityAt(int i, int j);
 };
 

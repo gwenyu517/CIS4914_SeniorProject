@@ -43,6 +43,10 @@ public class FluidRenderer implements GLSurfaceView.Renderer {
         FluidLibJNIWrapper.on_destroy();
     }
 
+    public void addForce(float x0, float y0, float x, float y) {
+        FluidLibJNIWrapper.addForce(x0, y0, x, y);
+    }
+
     public void addDensity(float x, float y, float amount) {
         FluidLibJNIWrapper.addDensity(x, y, amount);
     }
