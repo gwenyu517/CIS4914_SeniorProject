@@ -261,7 +261,7 @@ void Fluid::project(vectorField *u0, vectorField *u1) {
 
 void Fluid::setBoundary(GLfloat *f, int fieldType) {
     // vertical sides
-    for (int j = 0; j < H; j++) {
+    for (int j = 1; j < H - 2; j++) {
         switch(fieldType){
             case 0:     // x field
                 f[index(0, j)] = -f[index(1,j)];
@@ -278,7 +278,7 @@ void Fluid::setBoundary(GLfloat *f, int fieldType) {
     }
 
     // horizontal sides
-    for (int i = 0; i < W; i++) {
+    for (int i = 1; i < W - 1; i++) {
         switch(fieldType){
             case 0:     // x field
                 f[index(i,0)] = f[index(i,1)];
@@ -293,4 +293,10 @@ void Fluid::setBoundary(GLfloat *f, int fieldType) {
                 f[index(i,H-1)] = f[index(i,H-2)];
         }
     }
+
+    f[index(0, 0)] = 0.5f * (f[index(0,1)] + f[index(1,0)]);
+    f[index(W-1, 0)] = 0.5f * (f[index(W-1,1)] + f[index(W-2,0)]);
+    f[index(W-1, H-1)] = 0.5f * (f[index(W-1,H-2)] + f[index(W-2,H-1)]);
+    f[index(0, H-1)] = 0.5f * (f[index(0, H-2)] + f[index(1,H-1)]);
+
 }

@@ -22,7 +22,7 @@ static GLint dH = 10;
 
 static Fluid* fluid;
 static GLfloat viscosity = 0;
-static GLfloat diffRate = 0.001;
+static GLfloat diffRate = 0;
 
 void setGridSize(int width, int height) {
     p_width = width / dH;
