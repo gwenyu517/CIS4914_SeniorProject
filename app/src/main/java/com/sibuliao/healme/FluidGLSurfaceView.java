@@ -42,16 +42,23 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                 Log.d("addF", "DOWN ");
                 x0 = x;
                 y0 = y;
+                renderer.addDensity(x, y, 255);
+                /*
                 queueEvent(new Runnable() {
                     @Override
                     public void run() {
-                        renderer.addDensity(x, y, 500);
+                        renderer.addDensity(x, y, 255);
                         //renderer.addDensity(100, 100, 500);
                     }
                 });
-
+                */
             case MotionEvent.ACTION_MOVE:
                 Log.d("addF", "MOVE " + x0 + " -> " + x + ", " + y0 + " -> " + y);
+                renderer.addDensity(x, y, 255);
+                renderer.addForce(x0, y0, x, y);
+                x0 = x;
+                y0 = y;
+                /*
                 queueEvent(new Runnable() {
                     @Override
                     public void run() {
@@ -65,6 +72,7 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                         //renderer.addForce(100, 100, x, y);
                     }
                 });
+                */
             case MotionEvent.ACTION_UP:
 
         }

@@ -187,6 +187,8 @@ void on_surface_created() {
 }
 
 void on_surface_changed(int width, int height) {
+    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "woooooooaaaaaaaahhhhhhhh there!!!");
+
     glViewport (0, 0, width, height);
     eglGetCurrentContext();
 }
@@ -195,7 +197,12 @@ void updateTexture() {
     for (int i = 0; i < p_width; i++){
         for (int j = 0; j < p_height; j++){
             int k = 4* (j*p_width + i);
-            pixels[k+3] = (GLubyte)fluid->densityAt(i,j);
+            if (fluid->densityAt(i,j) > 255)
+                pixels[k+3] = 255;
+            else if (fluid->densityAt(i,j) < 0)
+                pixels[k+3] = 0;
+            else
+                pixels[k+3] = fluid->densityAt(i,j);
             //__android_log_print(ANDROID_LOG_DEBUG, "pixels", "[%d, %d] : %d", i, j, pixels[k+3]);
         }
     }
