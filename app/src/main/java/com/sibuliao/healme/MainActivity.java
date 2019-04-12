@@ -1,12 +1,18 @@
 package com.sibuliao.healme;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 
 public class MainActivity extends AppCompatActivity {
 
     private FluidGLSurfaceView glSurfaceView;
+    private int viewWidth;
+    private int viewHeight;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Todo: check if supports OpenGLES 2.0/3.0
 
+        /*
         if (true) {
             glSurfaceView = new FluidGLSurfaceView(getApplication());
             setContentView(glSurfaceView);
@@ -23,6 +30,31 @@ public class MainActivity extends AppCompatActivity {
                     getWindowManager().getDefaultDisplay().getHeight());
 
         }
+        */
+
+        setContentView(R.layout.activity_main);
+        glSurfaceView = (FluidGLSurfaceView)findViewById(R.id.fluidGLSurfaceView);
+
+        ViewTreeObserver viewTreeObserver = glSurfaceView.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    glSurfaceView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    viewWidth = glSurfaceView.getWidth();
+                    viewHeight = glSurfaceView.getHeight();
+                    glSurfaceView.setBoundSize(viewWidth, viewHeight);
+                    Log.d("size", "w " + viewWidth + ", h " + viewHeight);
+
+                }
+            });
+        }
+/*
+        Point size = new Point();
+        getWindowManager().getDefaultDisplay().getSize(size);
+        Log.d("size", "~~~ w " + size.x + ", h " + size.y);
+            2076x1080
+*/
     }
 
     @Override
@@ -44,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onDestroy();
     }
+
+    // Code for Sticky Immersive (fullscreen) mode taken from Android Development guides
+    // https://developer.android.com/training/system-ui/immersive#EnableFullscreen
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {

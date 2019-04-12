@@ -5,8 +5,8 @@ static const int iter = 20;
 Fluid::Fluid(GLfloat viscosity, GLfloat diffRate, int width, int height, int dH) {
     this->viscosity = viscosity;
     this->diffRate = diffRate;
-    this->W = width;
-    this->H = height;
+    this->W = width+2;
+    this->H = height+2;
     this->dH = dH;
 
     setupGrid();

@@ -81,7 +81,8 @@ GLuint LoadShader(GLenum type, const char *shaderSrc) {
 }
 
 void on_surface_created() {
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(255.0f, 0.0f, 255.0f, 255.0f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -209,11 +210,8 @@ void updateTexture() {
 
     __android_log_print(ANDROID_LOG_DEBUG, "pixels", "_________________________________________________");
 
-
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glActiveTexture(GL_TEXTURE_2D);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, p_width, p_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 }
 
 void update(long dt) {
@@ -275,16 +273,25 @@ void cleanup() {
 }
 
 void addForce(float x0, float y0, float x, float y) {
-    int i = (int)x0 / dH;
-    int j = (int)y0 / dH;
+    //int i = (int)x0 / dH;
+    //int j = (int)y0 / dH;
+    int i = (int)(x*p_width);
+    int j = (int)(y*p_height);
+    if (i > p_width - 1)
+        i = p_width - 1;
+
     __android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g - %g = %g", y, y0, (y - y0));
-    fluid->addForce(i, j, 4*(x-x0), 4*(y-y0));
+    fluid->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0));
 
 }
 
 void addDensity(float x, float y, float amount) {
-    int i = (int)x / dH;
-    int j = (int)y / dH;
+    //int i = (int)x / dH;
+    //int j = (int)y / dH;
+    int i = (int)(x*p_width);
+    int j = (int)(y*p_height);
+    if (i > p_width - 1)
+        i = p_width - 1;
     fluid->addDensity(i, j, 4*amount);
 }
 

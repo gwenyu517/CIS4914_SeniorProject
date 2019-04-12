@@ -3,6 +3,7 @@ package com.sibuliao.healme;
 import android.opengl.GLSurfaceView;
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -23,8 +24,19 @@ public class FluidGLSurfaceView extends GLSurfaceView {
         setRenderer(renderer);
     }
 
+    public FluidGLSurfaceView(Context context, AttributeSet attrs){
+        super(context, attrs);
+        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        setEGLContextClientVersion(3);
+
+        renderer = new FluidRenderer(context);
+        setRenderer(renderer);
+    }
+
     public void setBoundSize(int width, int height){
         renderer.setBoundSize(width, height);
+        Log.d("size", "well .... w " + this.getWidth() + ", h " + this.getHeight());
+
     }
 
     public void onDestroy(){
@@ -39,10 +51,11 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("addF", "DOWN ");
+                Log.d("size", "px " + x);
+                Log.d("size", "getX " + this.getX() + " getLeft " + this.getLeft()+ " getWidth " + this.getWidth());
                 x0 = x;
                 y0 = y;
-                renderer.addDensity(x, y, 255);
+                renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255);
                 /*
                 queueEvent(new Runnable() {
                     @Override
@@ -53,11 +66,20 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                 });
                 */
             case MotionEvent.ACTION_MOVE:
-                Log.d("addF", "MOVE " + x0 + " -> " + x + ", " + y0 + " -> " + y);
-                renderer.addDensity(x, y, 255);
-                renderer.addForce(x0, y0, x, y);
-                x0 = x;
-                y0 = y;
+                if (x > this.getRight()){
+                    float maxX = this.getRight();
+                    renderer.addDensity(maxX / this.getWidth(), y / this.getHeight(), 255);
+                    renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), maxX / this.getWidth(), y / this.getHeight());
+                    x0 = maxX;
+                    y0 = y;
+                }
+                else {
+                    //renderer.addDensity(x, y, 255);
+                    renderer.addDensity(x / this.getWidth(), y / this.getHeight(), 255);
+                    renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), x / this.getWidth(), y / this.getHeight());
+                    x0 = x;
+                    y0 = y;
+                }
                 /*
                 queueEvent(new Runnable() {
                     @Override
