@@ -45,14 +45,14 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e){
-        final float x = e.getX();// - this.getLeft();
-        final float y = this.getHeight() - e.getY();
+        final float x = e.getX() - this.getLeft();
+        final float y = this.getBottom() - e.getY(); //this.getHeight() - e.getY();
         //currTime = SystemClock.elapsedRealtime();
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("size", "px " + x);
-                Log.d("size", "getX " + this.getX() + " getLeft " + this.getLeft()+ " getWidth " + this.getWidth());
+                Log.d("size", "py " + y);
+                Log.d("size", "getBottom " + this.getBottom());
                 x0 = x;
                 y0 = y;
                 renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255);

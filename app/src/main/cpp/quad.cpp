@@ -6,6 +6,7 @@
 //#include <GLES3/gl3.h>
 //#include <android/log.h>
 
+static const GLfloat coffeeColor[] = {103.0f/255.0f, 67.0f/255.0f, 45.0f/255.0f, 1.0f};
 
 static GLuint programObject;
 static GLuint vertexBufferObject;
@@ -81,8 +82,7 @@ GLuint LoadShader(GLenum type, const char *shaderSrc) {
 }
 
 void on_surface_created() {
-    //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClearColor(255.0f, 0.0f, 255.0f, 255.0f);
+    glClearColor(coffeeColor[0], coffeeColor[1], coffeeColor[2], coffeeColor[3]);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
