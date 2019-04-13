@@ -1,5 +1,8 @@
 package com.sibuliao.healme;
 
+import android.graphics.Canvas;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
 import android.content.Context;
 import android.os.SystemClock;
@@ -11,13 +14,14 @@ public class FluidGLSurfaceView extends GLSurfaceView {
     private final FluidRenderer renderer;
     private float x0;
     private float y0;
+    private Path shapePath;
     //private long currTime;
     //private long prevTime;
     //private long dt;
 
     public FluidGLSurfaceView(Context context){
         super(context);
-        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        //setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         setEGLContextClientVersion(3);
 
         renderer = new FluidRenderer(context);
@@ -26,7 +30,7 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
     public FluidGLSurfaceView(Context context, AttributeSet attrs){
         super(context, attrs);
-        setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+        //setEGLConfigChooser(8, 8, 8, 8, 16, 0);
         setEGLContextClientVersion(3);
 
         renderer = new FluidRenderer(context);
@@ -41,6 +45,15 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
     public void onDestroy(){
         renderer.onDestroy();
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        shapePath = new Path();
+        shapePath.addRoundRect( new RectF(this.getLeft()+32, this.getTop()+32, this.getRight()-32, this.getBottom()-32),
+                100.0f, 100.0f, Path.Direction.CW);
+        canvas.clipPath(shapePath);
+        super.dispatchDraw(canvas);
     }
 
     @Override

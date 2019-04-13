@@ -4,10 +4,11 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
     private FluidGLSurfaceView glSurfaceView;
     private int viewWidth;
@@ -49,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        glSurfaceView.setZOrderMediaOverlay(false);
+        SurfaceHolder holder = glSurfaceView.getHolder();
+        holder.addCallback(this);
+
 /*
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
@@ -75,6 +81,21 @@ public class MainActivity extends AppCompatActivity {
             glSurfaceView.onDestroy();
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder){
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
     }
 
     // Code for Sticky Immersive (fullscreen) mode taken from Android Development guides
