@@ -73,8 +73,8 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                 x0 = x;
                 y0 = y;
                 Log.d("mode", "" + mode);
-                if (mode == 1)
-                    renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255);
+                if (mode > 0)
+                    renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255, mode);
 
                 /*
                 queueEvent(new Runnable() {
@@ -95,8 +95,8 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                 if (mode > -1)
                     renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), currX / this.getWidth(), y / this.getHeight());
 
-                if (mode == 1)
-                    renderer.addDensity(currX / this.getWidth(), y / this.getHeight(), 255);
+                if (mode > 0)
+                    renderer.addDensity(currX / this.getWidth(), y / this.getHeight(), 255, mode);
 
                 x0 = currX;
                 y0 = y;

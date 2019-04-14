@@ -41,8 +41,8 @@ Java_com_sibuliao_healme_FluidLibJNIWrapper_addForce
 
 JNIEXPORT void JNICALL
 Java_com_sibuliao_healme_FluidLibJNIWrapper_addDensity
-        (JNIEnv *env, jclass cls, jfloat x, jfloat y, jfloat amount) {
-    addDensity(x, y, amount);
+        (JNIEnv *env, jclass cls, jfloat x, jfloat y, jfloat amount, jint mode) {
+    addDensity(x, y, amount, mode);
 }
 
 JNIEXPORT void JNICALL

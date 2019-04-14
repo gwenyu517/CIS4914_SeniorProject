@@ -10,37 +10,50 @@ static const GLfloat coffeeColor[] = {103.0f/255.0f, 67.0f/255.0f, 45.0f/255.0f,
 
 static GLuint programObject;
 static GLuint vertexBufferObject;
-static GLuint textureID;
+static GLuint* textureID;
 
 static GLfloat vVertices[] = {  1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
                                 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
                                 -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
                                 -1.0f, 1.0f, 0.0f, 0.0f, 1.0f };
 
-static GLubyte* pixels;
+static GLubyte* milk_pixels;
+static GLubyte* choco_pixels;
+
 static GLint p_width, p_height;
 static GLint dH = 10;
 
-static Fluid* fluid;
-static GLfloat viscosity = 0.03;
-static GLfloat diffRate = 0;
+static Fluid* milk;
+static Fluid* choco;
+static GLfloat m_viscosity = 0.03;
+static GLfloat m_diffRate = 0;
+static GLfloat c_viscosity = 0.5;
+static GLfloat c_diffRate = 0;
 
 void setGridSize(int width, int height) {
     p_width = width / dH;
     p_height = height / dH;
 
-    pixels = (GLubyte*)malloc(4*p_width*p_height*sizeof(GLubyte));
+    milk_pixels = (GLubyte*)malloc(4*p_width*p_height*sizeof(GLubyte));
+    choco_pixels = (GLubyte*)malloc(4*p_width*p_height*sizeof(GLubyte));
+
     for (int i = 0; i < p_width; i++) {
         for (int j = 0; j < p_height; j++) {
             int k = 4 * (j*p_width + i);
-            pixels[k] = 255;
-            pixels[k + 1] = 255;
-            pixels[k + 2] = 255;
-            pixels[k + 3] = 0;
+            milk_pixels[k] = 255;
+            milk_pixels[k + 1] = 252;
+            milk_pixels[k + 2] = 247;
+            milk_pixels[k + 3] = 0;
+
+            choco_pixels[k] = 43;
+            choco_pixels[k + 1] = 19;
+            choco_pixels[k + 2] = 11;
+            choco_pixels[k + 3] = 0;
         }
     }
 
-    fluid = new Fluid(viscosity, diffRate, p_width, p_height, dH);
+    milk = new Fluid(m_viscosity, m_diffRate, p_width, p_height, dH);
+    choco = new Fluid(c_viscosity, c_diffRate, p_width, p_height, dH);
 }
 
 GLuint LoadShader(GLenum type, const char *shaderSrc) {
@@ -169,13 +182,22 @@ void on_surface_created() {
 
 
     // Texture stuff
+    textureID = (GLuint*)malloc(2*sizeof(GLuint));
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glGenTextures(2, textureID);
 
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glActiveTexture(GL_TEXTURE_2D);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    //glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureID[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, milk_pixels);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+
+    //glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textureID[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p_width, p_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, choco_pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -194,40 +216,55 @@ void on_surface_changed(int width, int height) {
     eglGetCurrentContext();
 }
 
-void updateTexture() {
+void updateTextures() {
     for (int i = 0; i < p_width; i++){
         for (int j = 0; j < p_height; j++){
             int k = 4* (j*p_width + i);
-            if (fluid->densityAt(i,j) > 255)
-                pixels[k+3] = 255;
-            else if (fluid->densityAt(i,j) < 0)
-                pixels[k+3] = 0;
+            if (milk->densityAt(i,j) > 255)
+                milk_pixels[k+3] = 255;
+            else if (milk->densityAt(i,j) < 0)
+                milk_pixels[k+3] = 0;
             else
-                pixels[k+3] = fluid->densityAt(i,j);
-            //__android_log_print(ANDROID_LOG_DEBUG, "pixels", "[%d, %d] : %d", i, j, pixels[k+3]);
+                milk_pixels[k+3] = milk->densityAt(i,j);
+
+            if (choco->densityAt(i,j) > 255)
+                choco_pixels[k+3] = 255;
+            else if (choco->densityAt(i,j) < 0)
+                choco_pixels[k+3] = 0;
+            else
+                choco_pixels[k+3] = choco->densityAt(i,j);
+            //__android_log_print(ANDROID_LOG_DEBUG, "milk_pixels", "[%d, %d] : %d", i, j, milk_pixels[k+3]);
         }
     }
 
-    __android_log_print(ANDROID_LOG_DEBUG, "pixels", "_________________________________________________");
+    //__android_log_print(ANDROID_LOG_DEBUG, "milk_pixels", "_________________________________________________");
 
     glActiveTexture(GL_TEXTURE_2D);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, p_width, p_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    glBindTexture(GL_TEXTURE_2D, textureID[0]);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, p_width, p_height, GL_RGBA, GL_UNSIGNED_BYTE, milk_pixels);
+
+    glBindTexture(GL_TEXTURE_2D, textureID[1]);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, p_width, p_height, GL_RGBA, GL_UNSIGNED_BYTE, choco_pixels);
+
 }
 
 void update(long dt) {
     int i = (int)100/dH;
     int j = (int)100/dH;
 
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity was, %g", (double)fluid->velocityAt(i, j));
-    fluid->updateVelocity(dt);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity is, %g", (double)fluid->velocityAt(i, j));
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity was, %g", (double)milk->velocityAt(i, j));
+    milk->updateVelocity(dt);
+    choco->updateVelocity(dt);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity is, %g", (double)milk->velocityAt(i, j));
 
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density was, %g", (double)fluid->densityAt(i, j));
-    fluid->updateDensity(dt);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density is, %g", (double)fluid->densityAt(i, j));
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density was, %g", (double)milk->densityAt(i, j));
+    milk->updateDensity(dt);
+    choco->updateDensity(dt);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density is, %g", (double)milk->densityAt(i, j));
 
-    updateTexture();
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "__________________________________________________");
+    updateTextures();
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "__________________________________________________");
 }
 
 void drawFrame() {
@@ -246,10 +283,11 @@ void drawFrame() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_ALPHA_BITS);
 
-    // Texture stuff
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    // DRAWWWWWWW
+    // Milk texture + draw
+    glBindTexture(GL_TEXTURE_2D, textureID[0]);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    // Choco texture + draw
+    glBindTexture(GL_TEXTURE_2D, textureID[1]);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 
@@ -268,8 +306,10 @@ void on_draw_frame(long dt) {
 }
 
 void cleanup() {
-    free(pixels);
-    delete fluid;
+    free(milk_pixels);
+    free(choco_pixels);
+    free(textureID);
+    delete milk;
 }
 
 void addForce(float x0, float y0, float x, float y) {
@@ -280,31 +320,39 @@ void addForce(float x0, float y0, float x, float y) {
     if (i > p_width - 1)
         i = p_width - 1;
 
-    __android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g - %g = %g", y, y0, (y - y0));
-    fluid->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0));
-
+    //__android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g - %g = %g", y, y0, (y - y0));
+    milk->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0));
+    choco->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0));
 }
 
-void addDensity(float x, float y, float amount) {
+void addDensity(float x, float y, float amount, int mode) {
     //int i = (int)x / dH;
     //int j = (int)y / dH;
     int i = (int)(x*p_width);
     int j = (int)(y*p_height);
     if (i > p_width - 1)
         i = p_width - 1;
-    fluid->addDensity(i, j, 4*amount);
+
+    __android_log_print(ANDROID_LOG_DEBUG, "addDensity", "mode %d", mode);
+
+    if (mode == 1)
+        milk->addDensity(i, j, 4*amount);
+    else
+        choco->addDensity(i, j, 4*amount);
 }
 
 void clearTextures() {
     for (int i = 0; i < p_width; i++) {
         for (int j = 0; j < p_height; j++) {
             int k = 4 * (j*p_width + i);
-            pixels[k + 3] = 0;
+            milk_pixels[k + 3] = 0;
+            choco_pixels[k + 3] = 0;
         }
     }
 }
 
 void resetSim() {
     clearTextures();
-    fluid->reset();
+    milk->reset();
+    choco->reset();
 }
