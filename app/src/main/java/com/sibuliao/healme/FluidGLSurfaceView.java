@@ -2,6 +2,7 @@ package com.sibuliao.healme;
 
 import android.graphics.Canvas;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
 import android.content.Context;
@@ -9,12 +10,16 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 public class FluidGLSurfaceView extends GLSurfaceView {
     private final FluidRenderer renderer;
     private float x0;
     private float y0;
     private Path shapePath;
+
+    private int mode;
     //private long currTime;
     //private long prevTime;
     //private long dt;
@@ -39,8 +44,7 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
     public void setBoundSize(int width, int height){
         renderer.setBoundSize(width, height);
-        Log.d("size", "well .... w " + this.getWidth() + ", h " + this.getHeight());
-
+        //Log.d("size", "well .... w " + this.getWidth() + ", h " + this.getHeight());
     }
 
     public void onDestroy(){
@@ -64,11 +68,14 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d("size", "py " + y);
-                Log.d("size", "getBottom " + this.getBottom());
+                //Log.d("size", "py " + y);
+                //Log.d("size", "getBottom " + this.getBottom());
                 x0 = x;
                 y0 = y;
-                renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255);
+                Log.d("mode", "" + mode);
+                if (mode == 1)
+                    renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255);
+
                 /*
                 queueEvent(new Runnable() {
                     @Override
@@ -79,20 +86,20 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                 });
                 */
             case MotionEvent.ACTION_MOVE:
-                if (x > this.getRight()){
-                    float maxX = this.getRight();
-                    renderer.addDensity(maxX / this.getWidth(), y / this.getHeight(), 255);
-                    renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), maxX / this.getWidth(), y / this.getHeight());
-                    x0 = maxX;
-                    y0 = y;
-                }
-                else {
-                    //renderer.addDensity(x, y, 255);
-                    renderer.addDensity(x / this.getWidth(), y / this.getHeight(), 255);
-                    renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), x / this.getWidth(), y / this.getHeight());
-                    x0 = x;
-                    y0 = y;
-                }
+                float currX;
+                if (x > this.getRight())
+                    currX = this.getRight();
+                else
+                    currX = x;
+
+                if (mode > -1)
+                    renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), currX / this.getWidth(), y / this.getHeight());
+
+                if (mode == 1)
+                    renderer.addDensity(currX / this.getWidth(), y / this.getHeight(), 255);
+
+                x0 = currX;
+                y0 = y;
                 /*
                 queueEvent(new Runnable() {
                     @Override
@@ -113,4 +120,9 @@ public class FluidGLSurfaceView extends GLSurfaceView {
         }
         return true;
     }
+
+    public void setMode(int m){
+        mode = m;
+    }
+
 }

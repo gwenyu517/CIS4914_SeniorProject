@@ -7,12 +7,19 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
     private FluidGLSurfaceView glSurfaceView;
     private int viewWidth;
     private int viewHeight;
+
+    private ToggleButton milk;
+    private ToggleButton choco;
+    private ToggleButton stir;
+
 
 
     @Override
@@ -61,6 +68,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Log.d("size", "~~~ w " + size.x + ", h " + size.y);
             2076x1080
 */
+
+        createButtons();
     }
 
     @Override
@@ -131,5 +140,55 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+    }
+
+
+    private void createButtons() {
+        milk = (ToggleButton)findViewById(R.id.toggleButtonMilk);
+        choco = (ToggleButton)findViewById(R.id.toggleButtonChoco);
+        stir = (ToggleButton)findViewById(R.id.toggleButtonStir);
+
+
+        milk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    choco.setChecked(false);
+                    stir.setChecked(false);
+                    glSurfaceView.setMode(1);
+                } else {
+                    stir.setChecked(true);
+                }
+            }
+        });
+
+        choco.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    milk.setChecked(false);
+                    stir.setChecked(false);
+                    glSurfaceView.setMode(2);
+                } else {
+                    stir.setChecked(true);
+                }
+            }
+        });
+
+        stir.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    milk.setChecked(false);
+                    choco.setChecked(false);
+                    glSurfaceView.setMode(0);
+                } else {
+                    glSurfaceView.setMode(-1);
+                }
+            }
+        });
+
+
+        milk.setChecked(true);
     }
 }

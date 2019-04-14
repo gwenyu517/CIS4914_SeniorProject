@@ -24,6 +24,55 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteY="209dp">
 
+        <ToggleButton
+            android:id="@+id/toggleButtonMilk"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="#f00"
+            android:layout_marginRight="5dp"
+            android:text="ToggleButton"
+            android:textOff="add milk?"
+            android:textOn="adding choco" />
+
+        <ToggleButton
+            android:id="@+id/toggleButtonChoco"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="#000"
+            android:layout_marginRight="5dp"
+            android:text="ToggleButton"
+            android:textOff="add choco?"
+            android:textOn="adding choco" />
+
+
+        <ToggleButton
+            android:id="@+id/toggleButtonStir"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="#000"
+            android:layout_marginRight="5dp"
+            android:text="ToggleButton" />
+
+        <ToggleButton
+            android:id="@+id/toggleButton5"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="#f00"
+            android:layout_marginRight="5dp"
+            android:text="ToggleButton" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="#000"
+            android:layout_marginRight="5dp"
+            android:text="Button" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
