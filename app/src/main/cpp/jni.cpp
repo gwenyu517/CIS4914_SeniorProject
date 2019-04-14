@@ -35,14 +35,14 @@ Java_com_sibuliao_healme_FluidLibJNIWrapper_on_1destroy
 
 JNIEXPORT void JNICALL
 Java_com_sibuliao_healme_FluidLibJNIWrapper_addForce
-        (JNIEnv *env, jclass cls, jfloat x0, jfloat y0, jfloat x, jfloat y) {
-    addForce(x0, y0, x, y);
+        (JNIEnv *env, jclass cls, jfloat x0, jfloat y0, jfloat x, jfloat y, jfloat size) {
+    addForce(x0, y0, x, y, size);
 }
 
 JNIEXPORT void JNICALL
 Java_com_sibuliao_healme_FluidLibJNIWrapper_addDensity
-        (JNIEnv *env, jclass cls, jfloat x, jfloat y, jfloat amount, jint mode) {
-    addDensity(x, y, amount, mode);
+        (JNIEnv *env, jclass cls, jfloat x, jfloat y, jfloat amount, jint mode, jfloat size) {
+    addDensity(x, y, amount, mode, size);
 }
 
 JNIEXPORT void JNICALL

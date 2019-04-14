@@ -48,8 +48,8 @@ public:
     void updateVelocity(long dt);
     void updateDensity(long dt);
 
-    void addForce(int i, int j, GLfloat amountX, GLfloat amountY);
-    void addDensity(int i, int j, GLfloat amount);\
+    void addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat size);
+    void addDensity(int i, int j, GLfloat amount, GLfloat size);
     void reset();
 
     GLfloat densityAt(int i, int j);

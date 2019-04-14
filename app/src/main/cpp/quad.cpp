@@ -25,7 +25,7 @@ static GLint dH = 10;
 
 static Fluid* milk;
 static Fluid* choco;
-static GLfloat m_viscosity = 0.03;
+static GLfloat m_viscosity = 0.05;
 static GLfloat m_diffRate = 0;
 static GLfloat c_viscosity = 0.5;
 static GLfloat c_diffRate = 0;
@@ -255,12 +255,12 @@ void update(long dt) {
 
     //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity was, %g", (double)milk->velocityAt(i, j));
     milk->updateVelocity(dt);
-    choco->updateVelocity(dt);
+    //choco->updateVelocity(dt);
     //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "velocity is, %g", (double)milk->velocityAt(i, j));
 
     //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density was, %g", (double)milk->densityAt(i, j));
     milk->updateDensity(dt);
-    choco->updateDensity(dt);
+    //choco->updateDensity(dt);
     //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "density is, %g", (double)milk->densityAt(i, j));
 
     updateTextures();
@@ -312,7 +312,7 @@ void cleanup() {
     delete milk;
 }
 
-void addForce(float x0, float y0, float x, float y) {
+void addForce(float x0, float y0, float x, float y, float size) {
     //int i = (int)x0 / dH;
     //int j = (int)y0 / dH;
     int i = (int)(x*p_width);
@@ -321,11 +321,11 @@ void addForce(float x0, float y0, float x, float y) {
         i = p_width - 1;
 
     //__android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g - %g = %g", y, y0, (y - y0));
-    milk->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0));
-    choco->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0));
+    milk->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0), size);
+    choco->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0), size);
 }
 
-void addDensity(float x, float y, float amount, int mode) {
+void addDensity(float x, float y, float amount, int mode, float size) {
     //int i = (int)x / dH;
     //int j = (int)y / dH;
     int i = (int)(x*p_width);
@@ -333,12 +333,12 @@ void addDensity(float x, float y, float amount, int mode) {
     if (i > p_width - 1)
         i = p_width - 1;
 
-    __android_log_print(ANDROID_LOG_DEBUG, "addDensity", "mode %d", mode);
+    //__android_log_print(ANDROID_LOG_DEBUG, "addDensity", "mode %d", mode);
 
     if (mode == 1)
-        milk->addDensity(i, j, 4*amount);
+        milk->addDensity(i, j, 4*amount, size);
     else
-        choco->addDensity(i, j, 4*amount);
+        choco->addDensity(i, j, 4*amount, size);
 }
 
 void clearTextures() {

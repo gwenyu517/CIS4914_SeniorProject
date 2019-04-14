@@ -62,9 +62,12 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e){
-        final float x = e.getX() - this.getLeft();
-        final float y = this.getBottom() - e.getY(); //this.getHeight() - e.getY();
+        final float x = (e.getX() - this.getLeft()) / this.getWidth();
+        final float y = (this.getBottom() - e.getY()) / this.getHeight(); //this.getHeight() - e.getY();
+        float size = e.getSize();
         //currTime = SystemClock.elapsedRealtime();
+
+        Log.d("touch", "getSize = " + e.getSize());
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -74,7 +77,7 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                 y0 = y;
                 Log.d("mode", "" + mode);
                 if (mode > 0)
-                    renderer.addDensity(x/this.getWidth(), y/this.getHeight(), 255, mode);
+                    renderer.addDensity(x, y, 255, mode, size);
 
                 /*
                 queueEvent(new Runnable() {
@@ -88,15 +91,18 @@ public class FluidGLSurfaceView extends GLSurfaceView {
             case MotionEvent.ACTION_MOVE:
                 float currX;
                 if (x > this.getRight())
-                    currX = this.getRight();
+                    currX = (float)this.getRight() / this.getWidth();
                 else
                     currX = x;
 
-                if (mode > -1)
-                    renderer.addForce(x0 / this.getWidth(), y0 / this.getHeight(), currX / this.getWidth(), y / this.getHeight());
+                if (mode == 0)
+                    renderer.addForce(x0, y0, currX, y, 0);
 
                 if (mode > 0)
-                    renderer.addDensity(currX / this.getWidth(), y / this.getHeight(), 255, mode);
+                    renderer.addForce(x0, y0, currX, y, size);
+
+                if (mode > 0)
+                    renderer.addDensity(currX, y, 255, mode, size);
 
                 x0 = currX;
                 y0 = y;
