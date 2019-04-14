@@ -9,5 +9,6 @@ void cleanup();
 
 void addForce(float x0, float y0, float x, float y);
 void addDensity(float x, float y, float amount);
+void resetSim();
 
 #endif //HEALME_QUAD_H

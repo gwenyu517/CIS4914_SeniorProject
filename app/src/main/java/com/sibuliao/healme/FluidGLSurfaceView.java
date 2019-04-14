@@ -125,4 +125,8 @@ public class FluidGLSurfaceView extends GLSurfaceView {
         mode = m;
     }
 
+    public void clearCoffee() {
+        renderer.clearCoffee();
+    }
+
 }

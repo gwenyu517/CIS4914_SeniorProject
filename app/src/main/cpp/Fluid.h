@@ -38,6 +38,8 @@ private:
     void project(vectorField* u0, vectorField* u1);
 
     void setBoundary(GLfloat *f, int fieldType);
+    void allocateMemory();
+    void zeroFields();
 
 public:
     Fluid(GLfloat viscosity, GLfloat diffRate, int width, int height, int dH);
@@ -47,7 +49,8 @@ public:
     void updateDensity(long dt);
 
     void addForce(int i, int j, GLfloat amountX, GLfloat amountY);
-    void addDensity(int i, int j, GLfloat amount);
+    void addDensity(int i, int j, GLfloat amount);\
+    void reset();
 
     GLfloat densityAt(int i, int j);
 

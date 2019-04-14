@@ -295,3 +295,16 @@ void addDensity(float x, float y, float amount) {
     fluid->addDensity(i, j, 4*amount);
 }
 
+void clearTextures() {
+    for (int i = 0; i < p_width; i++) {
+        for (int j = 0; j < p_height; j++) {
+            int k = 4 * (j*p_width + i);
+            pixels[k + 3] = 0;
+        }
+    }
+}
+
+void resetSim() {
+    clearTextures();
+    fluid->reset();
+}

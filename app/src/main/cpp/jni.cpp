@@ -45,4 +45,10 @@ Java_com_sibuliao_healme_FluidLibJNIWrapper_addDensity
     addDensity(x, y, amount);
 }
 
+JNIEXPORT void JNICALL
+Java_com_sibuliao_healme_FluidLibJNIWrapper_clearQuad
+        (JNIEnv *env, jclass cls) {
+    resetSim();
+}
+
 }

@@ -13,4 +13,5 @@ public class FluidLibJNIWrapper {
 
     public static native void addForce(float x0, float y0, float x, float y);
     public static native void addDensity(float x, float y, float amount);
+    public static native void clearQuad();
 }

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private ToggleButton milk;
     private ToggleButton choco;
     private ToggleButton stir;
+    private Button clear;
 
 
 
@@ -144,9 +146,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
 
     private void createButtons() {
-        milk = (ToggleButton)findViewById(R.id.toggleButtonMilk);
-        choco = (ToggleButton)findViewById(R.id.toggleButtonChoco);
-        stir = (ToggleButton)findViewById(R.id.toggleButtonStir);
+        milk = (ToggleButton)findViewById(R.id.toggleButton_Milk);
+        choco = (ToggleButton)findViewById(R.id.toggleButton_Choco);
+        stir = (ToggleButton)findViewById(R.id.toggleButton_Stir);
+        clear = (Button)findViewById(R.id.button_clear);
 
 
         milk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -188,6 +191,12 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
 
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                glSurfaceView.clearCoffee();
+            }
+        });
 
         milk.setChecked(true);
     }

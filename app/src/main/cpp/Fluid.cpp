@@ -92,6 +92,10 @@ void Fluid::addDensity(int i, int j, GLfloat amount) {
     sDensity[index(i+1,j+1)] += amount;
 }
 
+void Fluid::reset() {
+    zeroFields();
+}
+
 GLfloat Fluid::densityAt(int i, int j) {
     return s1[index(i+1,j+1)];
 }
@@ -105,7 +109,11 @@ GLfloat Fluid::velocityAt(int i, int j) {
 // ------ PRIVATE ------
 
 void Fluid::setupGrid() {
+    allocateMemory();
+    zeroFields();
+}
 
+void Fluid::allocateMemory() {
     sForce = (vectorField*)malloc(sizeof(vectorField));
     sForce->x = (GLfloat*)malloc(W*H*sizeof(GLfloat));
     sForce->y = (GLfloat*)malloc(W*H*sizeof(GLfloat));
@@ -122,7 +130,9 @@ void Fluid::setupGrid() {
 
     s0 = (GLfloat*)malloc(W*H*sizeof(GLfloat));
     s1 = (GLfloat*)malloc(W*H*sizeof(GLfloat));
+}
 
+void Fluid::zeroFields() {
     for (int i = 0; i < W; i++) {
         for (int j = 0; j < H; j++) {
             sForce->x[index(i,j)] = 0;
