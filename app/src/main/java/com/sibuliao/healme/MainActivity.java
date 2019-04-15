@@ -1,5 +1,6 @@
 package com.sibuliao.healme;
 
+import android.content.res.AssetManager;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AssetManager assetManager = getAssets();
+        FluidLibJNIWrapper.passAssetManager(assetManager);
 
         // Todo: check if supports OpenGLES 2.0/3.0
 

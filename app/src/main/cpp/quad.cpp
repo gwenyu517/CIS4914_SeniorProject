@@ -8,6 +8,7 @@
 
 static const GLfloat coffeeColor[] = {103.0f/255.0f, 67.0f/255.0f, 45.0f/255.0f, 1.0f};
 
+static AAssetManager* assetManager;
 static GLuint programObject;
 static GLuint vertexBufferObject;
 static GLuint* textureID;
@@ -29,6 +30,10 @@ static GLfloat m_viscosity = 0.05;
 static GLfloat m_diffRate = 0;
 static GLfloat c_viscosity = 0.5;
 static GLfloat c_diffRate = 0;
+
+void setAssetManger(AAssetManager* amgr){
+    assetManager = amgr;
+}
 
 void setGridSize(int width, int height) {
     p_width = width / dH;
@@ -56,9 +61,17 @@ void setGridSize(int width, int height) {
     choco = new Fluid(c_viscosity, c_diffRate, p_width, p_height, dH);
 }
 
-GLuint LoadShader(GLenum type, const char *shaderSrc) {
+GLuint LoadShader(GLenum type, const char *shaderSrcFile) {
     GLuint shader;
     GLint compiled;
+    char* shaderSrcCode;
+
+    AAsset* asset = AAssetManager_open(assetManager, shaderSrcFile, AASSET_MODE_STREAMING);
+    long size = AAsset_getLength(asset);
+    shaderSrcCode = (char*)malloc(size*sizeof(char));
+
+    AAsset_read(asset, shaderSrcCode, size);
+    AAsset_close(asset);
 
     // Create the shader object
     shader = glCreateShader(type);
@@ -67,7 +80,8 @@ GLuint LoadShader(GLenum type, const char *shaderSrc) {
         return 0;
 
     // Load the shader source
-    glShaderSource(shader, 1, &shaderSrc, NULL);
+    glShaderSource(shader, 1, &shaderSrcCode, NULL);
+    free(shaderSrcCode);
 
     // Compile the shader
     glCompileShader(shader);
@@ -113,27 +127,9 @@ void on_surface_created() {
 
     programObject = 0;
 
-    char vShaderStr[] =
-            "#version 300 es                          \n"
-            "layout(location = 0) in vec3 vPosition;  \n"
-            "layout(location = 1) in vec2 vTexCoord;  \n"
-            "out vec2 texCoord;                       \n"
-            "void main()                              \n"
-            "{                                        \n"
-            "   gl_Position = vec4(vPosition, 1.0);   \n"
-            "   texCoord = vTexCoord;                 \n"
-            "}                                        \n";
+    char vShaderStr[] = "vertexShader.vert";
 
-    char fShaderStr[] =
-            "#version 300 es                              \n"
-            "precision mediump float;                     \n"
-            "in vec2 texCoord;                            \n"
-            "uniform sampler2D s_texture;                 \n"
-            "out vec4 fragColor;                          \n"
-            "void main()                                  \n"
-            "{                                            \n"
-            "   fragColor = texture(s_texture, texCoord); \n"
-            "}                                            \n";
+    char fShaderStr[] = "fragmentShader.frag";
 
     GLuint vertexShader;
     GLuint fragmentShader;

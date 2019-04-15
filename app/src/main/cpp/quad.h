@@ -1,6 +1,10 @@
 #ifndef HEALME_QUAD_H
 #define HEALME_QUAD_H
 
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+
+void setAssetManger(AAssetManager* amgr);
 void setGridSize(int width, int height);
 void on_surface_created();
 void on_surface_changed(int width, int height);

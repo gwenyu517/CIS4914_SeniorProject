@@ -4,6 +4,14 @@
 extern "C" {
 
 JNIEXPORT void JNICALL
+Java_com_sibuliao_healme_FluidLibJNIWrapper_passAssetManager
+        (JNIEnv *env, jclass cls, jobject java_asset_manager) {
+    AAssetManager* assetManager = AAssetManager_fromJava(env, java_asset_manager);
+    setAssetManger(assetManager);
+}
+
+
+JNIEXPORT void JNICALL
 Java_com_sibuliao_healme_FluidLibJNIWrapper_setBoundSize
         (JNIEnv *env, jclass cls, jint width, jint height) {
     setGridSize(width, height);

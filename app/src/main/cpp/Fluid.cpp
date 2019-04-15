@@ -83,8 +83,8 @@ void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat siz
 
     //sForce->x[index(i+1,j+1)] += amountX * 0.1;
     //sForce->y[index(i+1,j+1)] += amountY * 0.1;
-    amountX = amountX*0.1;
-    amountY = amountY*0.1;
+    //amountX = amountX*0.1;
+    //amountY = amountY*0.1;
 
     int radius = (int)(size * 100) / 2;
     if (radius < 1)
