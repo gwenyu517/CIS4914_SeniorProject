@@ -11,8 +11,9 @@ void on_surface_changed(int width, int height);
 void on_draw_frame(long dt);
 void cleanup();
 
-void addForce(float x0, float y0, float x, float y, float size);
+void addForce(float x0, float y0, float amountX, float amountY, float size);
 void addDensity(float x, float y, float amount, int mode, float size);
+void addGravity(float gx, float gy);
 void resetSim();
 
 #endif //HEALME_QUAD_H

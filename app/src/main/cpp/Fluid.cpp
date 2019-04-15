@@ -171,6 +171,15 @@ void Fluid::addDensity(int i, int j, GLfloat amount, GLfloat size) {
 
 }
 
+void Fluid::addGravity(GLfloat gx, GLfloat gy) {
+    for (int i = 0; i < W; i++) {
+        for (int j = 0; j < H; j++) {
+            sForce->x[index(i,j)] += gx;
+            sForce->y[index(i,j)] += gy;
+        }
+    }
+}
+
 void Fluid::reset() {
     zeroFields();
 }

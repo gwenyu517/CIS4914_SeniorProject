@@ -2,6 +2,10 @@ package com.sibuliao.healme;
 
 import android.content.res.AssetManager;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,8 +25,13 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private ToggleButton milk;
     private ToggleButton choco;
     private ToggleButton stir;
+    private ToggleButton gravity;
     private Button clear;
 
+    private SensorManager sensorManager;
+    private Sensor gravity_sensor;
+    private SensorEventListener gravityListener;
+    private boolean gravityOn;
 
 
     @Override
@@ -33,18 +42,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         FluidLibJNIWrapper.passAssetManager(assetManager);
 
         // Todo: check if supports OpenGLES 2.0/3.0
-
-        /*
-        if (true) {
-            glSurfaceView = new FluidGLSurfaceView(getApplication());
-            setContentView(glSurfaceView);
-
-            glSurfaceView.setBoundSize(
-                    getWindowManager().getDefaultDisplay().getWidth(),
-                    getWindowManager().getDefaultDisplay().getHeight());
-
-        }
-        */
 
         setContentView(R.layout.activity_main);
         glSurfaceView = (FluidGLSurfaceView)findViewById(R.id.fluidGLSurfaceView);
@@ -76,17 +73,22 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 */
 
         createButtons();
+        setUpGravitySensor();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        sensorManager.unregisterListener(gravityListener);
+
         glSurfaceView.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        sensorManager.registerListener(gravityListener, gravity_sensor, SensorManager.SENSOR_DELAY_NORMAL);
+
         glSurfaceView.onResume();
     }
 
@@ -153,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         milk = (ToggleButton)findViewById(R.id.toggleButton_Milk);
         choco = (ToggleButton)findViewById(R.id.toggleButton_Choco);
         stir = (ToggleButton)findViewById(R.id.toggleButton_Stir);
+        gravity = (ToggleButton)findViewById(R.id.toggleButton_Gravity);
         clear = (Button)findViewById(R.id.button_clear);
 
 
@@ -195,6 +198,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             }
         });
 
+        gravity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    sensorManager.registerListener(gravityListener, gravity_sensor, SensorManager.SENSOR_DELAY_NORMAL);
+                    gravityOn = true;
+                }
+                else {
+                    gravityOn = false;
+                }
+            }
+        });
+
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -203,5 +219,33 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         });
 
         milk.setChecked(true);
+        gravity.setChecked(false);
     }
+
+    private void setUpGravitySensor() {
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null) {
+            gravity_sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+            gravityListener = new SensorEventListener() {
+                @Override
+                public void onSensorChanged(SensorEvent event) {
+                    float gy = -event.values[0];
+                    float gx = event.values[1];
+                    if (gravityOn)
+                        glSurfaceView.addGravity(gx, gy);
+                    else
+                        sensorManager.unregisterListener(gravityListener);
+                }
+
+                @Override
+                public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+                }
+            };
+            gravityOn = false;
+        } else {
+            gravity.setEnabled(false);
+        }
+    }
+
 }

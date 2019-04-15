@@ -50,6 +50,7 @@ public:
 
     void addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat size);
     void addDensity(int i, int j, GLfloat amount, GLfloat size);
+    void addGravity(GLfloat gx, GLfloat gy);
     void reset();
 
     GLfloat densityAt(int i, int j);

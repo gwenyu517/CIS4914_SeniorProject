@@ -22,7 +22,7 @@ static GLubyte* milk_pixels;
 static GLubyte* choco_pixels;
 
 static GLint p_width, p_height;
-static GLint dH = 10;
+static GLint dH = 8;    //10
 
 static Fluid* milk;
 static Fluid* choco;
@@ -308,17 +308,17 @@ void cleanup() {
     delete milk;
 }
 
-void addForce(float x0, float y0, float x, float y, float size) {
+void addForce(float x0, float y0, float amountX, float amountY, float size) {
     //int i = (int)x0 / dH;
     //int j = (int)y0 / dH;
-    int i = (int)(x*p_width);
-    int j = (int)(y*p_height);
+    int i = (int)(x0*p_width);
+    int j = (int)(y0*p_height);
     if (i > p_width - 1)
         i = p_width - 1;
 
     //__android_log_print(ANDROID_LOG_DEBUG, "addF", "add %g - %g = %g", y, y0, (y - y0));
-    milk->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0), size);
-    choco->addForce(i, j, 4*p_width*dH*(x-x0), 4*p_height*dH*(y-y0), size);
+    milk->addForce(i, j, 400*p_width*amountX/dH, 400*p_height*amountY/dH, size);
+    choco->addForce(i, j, 400*p_width*amountX/dH, 400*p_height*amountY/dH, size);
 }
 
 void addDensity(float x, float y, float amount, int mode, float size) {
@@ -332,9 +332,14 @@ void addDensity(float x, float y, float amount, int mode, float size) {
     //__android_log_print(ANDROID_LOG_DEBUG, "addDensity", "mode %d", mode);
 
     if (mode == 1)
-        milk->addDensity(i, j, 4*amount, size);
+        milk->addDensity(i, j, 40*amount/dH, size);
     else
-        choco->addDensity(i, j, 4*amount, size);
+        choco->addDensity(i, j, 40*amount/dH, size);
+}
+
+void addGravity(float gx, float gy) {
+    milk->addGravity(0.05f*gx, 0.05f*gy);
+    choco->addGravity(0.05f*gx, 0.05f*gy);
 }
 
 void clearTextures() {

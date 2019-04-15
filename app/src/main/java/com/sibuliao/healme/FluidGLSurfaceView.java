@@ -10,15 +10,12 @@ import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.CompoundButton;
-import android.widget.ToggleButton;
 
 public class FluidGLSurfaceView extends GLSurfaceView {
     private final FluidRenderer renderer;
     private float x0;
     private float y0;
     private Path shapePath;
-
     private int mode;
     //private long currTime;
     //private long prevTime;
@@ -87,18 +84,22 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                     currX = x;
 
                 if (mode == 0)
-                    renderer.addForce(x0, y0, currX, y, 0);
+                    renderer.addForce(x0, y0, 0.1f*(currX - x0), 0.1f*(y - y0), size);
+                    //renderer.addForce(x0, y0, currX, y, 0);
 
-                if (mode > 0)
-                    renderer.addForce(x0, y0, currX, y, size);
-
-                if (mode > 0)
+                if (mode > 0) {
+                    renderer.addForce(x0, y0, currX - x0, y - y0, size);
                     renderer.addDensity(currX, y, 255, mode, size);
+                }
 
                 x0 = currX;
                 y0 = y;
         }
         return true;
+    }
+
+    public void addGravity(float gx, float gy) {
+        renderer.addGravity(gx, gy);
     }
 
     public void setMode(int m){
