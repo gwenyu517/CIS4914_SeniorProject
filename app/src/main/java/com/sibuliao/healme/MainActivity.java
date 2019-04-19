@@ -25,14 +25,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private ToggleButton milk;
     private ToggleButton choco;
     private ToggleButton stir;
-    private ToggleButton gravity;
+//    private ToggleButton gravity;
     private Button clear;
-
+/*
     private SensorManager sensorManager;
     private Sensor gravity_sensor;
     private SensorEventListener gravityListener;
     private boolean gravityOn;
-
+*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,17 +69,17 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
         Log.d("size", "~~~ w " + size.x + ", h " + size.y);
-            2076x1080
+            //2076x1080
 */
 
         createButtons();
-        setUpGravitySensor();
+        //setUpGravitySensor();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(gravityListener);
+        //sensorManager.unregisterListener(gravityListener);
 
         glSurfaceView.onPause();
     }
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(gravityListener, gravity_sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        //sensorManager.registerListener(gravityListener, gravity_sensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         glSurfaceView.onResume();
     }
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         milk = (ToggleButton)findViewById(R.id.toggleButton_Milk);
         choco = (ToggleButton)findViewById(R.id.toggleButton_Choco);
         stir = (ToggleButton)findViewById(R.id.toggleButton_Stir);
-        gravity = (ToggleButton)findViewById(R.id.toggleButton_Gravity);
+        //gravity = (ToggleButton)findViewById(R.id.toggleButton_Gravity);
         clear = (Button)findViewById(R.id.button_clear);
 
 
@@ -163,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
-                    choco.setChecked(false);
                     stir.setChecked(false);
-                    glSurfaceView.setMode(1);
+                    choco.setChecked(false);
+                    glSurfaceView.setMode(2);
                 } else {
-                    stir.setChecked(true);
+                    glSurfaceView.setMode(0);
                 }
             }
         });
@@ -178,9 +178,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 if (isChecked) {
                     milk.setChecked(false);
                     stir.setChecked(false);
-                    glSurfaceView.setMode(2);
+                    glSurfaceView.setMode(3);
                 } else {
-                    stir.setChecked(true);
+                    glSurfaceView.setMode(0);
                 }
             }
         });
@@ -191,14 +191,14 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 if (isChecked) {
                     milk.setChecked(false);
                     choco.setChecked(false);
-                    glSurfaceView.setMode(0);
+                    glSurfaceView.setMode(1);
                 } else {
-                    glSurfaceView.setMode(-1);
+                    glSurfaceView.setMode(0);
                 }
             }
         });
 
-        gravity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+/*        gravity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 }
             }
         });
-
+*/
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,9 +219,9 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         });
 
         milk.setChecked(true);
-        gravity.setChecked(false);
+        //gravity.setChecked(false);
     }
-
+/*
     private void setUpGravitySensor() {
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY) != null) {
@@ -231,6 +231,8 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 public void onSensorChanged(SensorEvent event) {
                     float gy = -event.values[0];
                     float gx = event.values[1];
+                    Log.d("sensor", "paaaaaabo");
+
                     if (gravityOn)
                         glSurfaceView.addGravity(gx, gy);
                     else
@@ -242,10 +244,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
                 }
             };
-            gravityOn = false;
+            gravityOn = true;
         } else {
-            gravity.setEnabled(false);
+            //gravity.setEnabled(false);
         }
     }
-
+*/
 }

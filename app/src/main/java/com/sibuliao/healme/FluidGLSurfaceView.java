@@ -16,10 +16,12 @@ public class FluidGLSurfaceView extends GLSurfaceView {
     private float x0;
     private float y0;
     private Path shapePath;
-    private int mode;
+    private int mode = 2;
     //private long currTime;
     //private long prevTime;
     //private long dt;
+
+    private float gX, gY;
 
     public FluidGLSurfaceView(Context context){
         super(context);
@@ -41,7 +43,6 @@ public class FluidGLSurfaceView extends GLSurfaceView {
 
     public void setBoundSize(int width, int height){
         renderer.setBoundSize(width, height);
-        //Log.d("size", "well .... w " + this.getWidth() + ", h " + this.getHeight());
     }
 
     public void onDestroy(){
@@ -51,7 +52,7 @@ public class FluidGLSurfaceView extends GLSurfaceView {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         shapePath = new Path();
-        shapePath.addRoundRect( new RectF(this.getLeft()+32, this.getTop()+32, this.getRight()-32, this.getBottom()-32),
+        shapePath.addRoundRect( new RectF(0, 0, this.getWidth(), this.getHeight()),
                 100.0f, 100.0f, Path.Direction.CW);
         canvas.clipPath(shapePath);
         super.dispatchDraw(canvas);
@@ -63,43 +64,121 @@ public class FluidGLSurfaceView extends GLSurfaceView {
         final float y = (this.getBottom() - e.getY()) / this.getHeight(); //this.getHeight() - e.getY();
         float size = e.getSize();
         //currTime = SystemClock.elapsedRealtime();
+        //final int historySize = e.getHistorySize();
+        //final int pointerCount = e.getPointerCount();
 
         Log.d("touch", "getSize = " + e.getSize());
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //Log.d("size", "py " + y);
-                //Log.d("size", "getBottom " + this.getBottom());
                 x0 = x;
                 y0 = y;
-                Log.d("mode", "" + mode);
-                if (mode > 0)
+
+                if (mode == 2) //milk
+                    renderer.addDensity(x, y, 255, mode, 4*size);
+                else if (mode == 3) // choco
                     renderer.addDensity(x, y, 255, mode, size);
 
+                break;
+
             case MotionEvent.ACTION_MOVE:
-                float currX;
-                if (x > this.getRight())
-                    currX = (float)this.getRight() / this.getWidth();
-                else
-                    currX = x;
+                if (x > 1.0)
+                    break;
+                else if (x < 0.0)
+                    break;
 
-                if (mode == 0)
-                    renderer.addForce(x0, y0, 0.1f*(currX - x0), 0.1f*(y - y0), size);
-                    //renderer.addForce(x0, y0, currX, y, 0);
+                switch(mode){
+                    case 0:         //none
+                        break;
+                    case 1:         //stir
+                        renderer.addForce(x0, y0, size*(x - x0), size*(y - y0), 0.5f*size);
+                        break;
+                    case 2:         //milk
+                        if (size > 0.04)
+                            renderer.addForce(x0, y0, 2*size*(x - x0), 2*size*(y - y0), 2*size);
+                        else
+                            renderer.addForce(x0, y0, size*(x - x0), size*(y - y0), 0.5f*size);
 
-                if (mode > 0) {
-                    renderer.addForce(x0, y0, currX - x0, y - y0, size);
-                    renderer.addDensity(currX, y, 255, mode, size);
+                        renderer.addDensity(x, y, 0.8f*255, mode, size);
+                        break;
+                    case 3:         //choco
+                        renderer.addForce(x0, y0, 0.01f*(x - x0), 0.01f*(y - y0), size);
+                        renderer.addDensity(x, y, 255, mode, size);
+                        break;
                 }
 
-                x0 = currX;
+                x0 = x;
                 y0 = y;
-        }
+                break;
+                /*
+                float currX;
+                float currY;
+                for (int h = 0; h < historySize; h++) {
+                    for (int p = 0; p < pointerCount; p++) {
+                        currX = (e.getHistoricalX(p, h) - this.getLeft()) / this.getWidth();
+                        currY = (this.getBottom() - e.getHistoricalY(p, h)) / this.getHeight();
+
+                        if (currX > this.getRight())
+                            currX = (float)this.getRight() / this.getWidth();
+
+                        switch(mode){
+                            case 0:         //none
+                                break;
+                            case 1:         //stir
+                                renderer.addForce(x0, y0, 0.1f*(currX - x0), 0.1f*(currY - y0), size);
+                                break;
+                            case 2:         //milk
+                                renderer.addForce(x0, y0, (currX - x0), (currY - y0), 2*size);
+                                renderer.addDensity(currX, currY, 255, mode, size);
+                                break;
+                            case 3:         //choco
+                                renderer.addForce(x0, y0, 0.01f*(currX - x0), 0.01f*(currY - y0), size);
+                                renderer.addDensity(currX, currY, 255, mode, size);
+                                break;
+                        }
+
+                        x0 = currX;
+                        y0 = currY;
+                    }
+                }
+
+                for (int p = 0; p < pointerCount; p++) {
+                    currX = (e.getX() - this.getLeft()) / this.getWidth();
+                    currY = (this.getBottom() - e.getY()) / this.getHeight();
+
+
+                    if (currX > this.getRight())
+                        currX = (float)this.getRight() / this.getWidth();
+
+                    switch(mode){
+                        case 0:         //none
+                            break;
+                        case 1:         //stir
+                            renderer.addForce(x0, y0, 0.1f*(currX - x0), 0.1f*(currY - y0), size);
+                            break;
+                        case 2:         //milk
+                            renderer.addForce(x0, y0, (currX - x0), (currY - y0), 2*size);
+                            renderer.addDensity(currX, currY, 255, mode, size);
+                            break;
+                        case 3:         //choco
+                            renderer.addForce(x0, y0, 0.01f*(currX - x0), 0.01f*(currY - y0), size);
+                            renderer.addDensity(currX, currY, 255, mode, size);
+                            break;
+                    }
+
+                    x0 = currX;
+                    y0 = currY;
+                }
+                */
+
+                    }
         return true;
     }
 
     public void addGravity(float gx, float gy) {
-        renderer.addGravity(gx, gy);
+        gX = 0.01f*gx;
+        gY = 0.01f*gy;
+        //renderer.addGravity(gx, gy);
     }
 
     public void setMode(int m){

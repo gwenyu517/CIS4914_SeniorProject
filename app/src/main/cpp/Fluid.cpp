@@ -111,9 +111,13 @@ void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat siz
 
             __android_log_print(ANDROID_LOG_DEBUG, "addD", "try pX*pX = %d, py*py = %d, radius*radius = %d", pX*pX, pY*pY, radius*radius);
 
-            if (x*x + y*y <= radius*radius) {
-                sForce->x[index(pX, pY)] += amountX / (2 + x * x + y * y);
-                sForce->y[index(pX, pY)] += amountY / (2 + x * x + y * y);
+            if (x*x + y*y <= 0.5*radius*radius){
+                sForce->x[index(pX, pY)] += amountX;
+                sForce->y[index(pX, pY)] += amountY;
+            }
+            else if (x*x + y*y <= radius*radius) {
+                sForce->x[index(pX, pY)] += amountX / (x*x + y*y);
+                sForce->y[index(pX, pY)] += amountY / (x*x + y*y);
 
             }
 
@@ -131,16 +135,16 @@ void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat siz
 
 void Fluid::addDensity(int i, int j, GLfloat amount, GLfloat size) {
     //sDensity[index(i+1,j+1)] += amount;
-    __android_log_print(ANDROID_LOG_DEBUG, "addD", "size = %g", size);
+    //__android_log_print(ANDROID_LOG_DEBUG, "addD", "size = %g", size);
 
-    amount = 255.0f + 1.0f / size;
+    //amount = 255.0f + 1.0f / size;
     int radius = (int)(size * 100) / 2;
     if (radius < 1)
         radius = 1;
     else
         __android_log_print(ANDROID_LOG_DEBUG, "addD", "else! %d", radius);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "addD", "welp! %d", radius);
+    //__android_log_print(ANDROID_LOG_DEBUG, "addD", "welp! %d", radius);
 
     int pX, pY;
 
@@ -157,14 +161,16 @@ void Fluid::addDensity(int i, int j, GLfloat amount, GLfloat size) {
             else if (pY > H - 2)
                 pY = H - 2;
 
-            __android_log_print(ANDROID_LOG_DEBUG, "addD", "try %g / (%d*%d + %d*%d) = %g", amount, x, x, y, y, amount / (x*x + y*y));
-            __android_log_print(ANDROID_LOG_DEBUG, "addD", "try pX*pX = %d, py*py = %d, radius*radius = %d", pX*pX, pY*pY, radius*radius);
+            //__android_log_print(ANDROID_LOG_DEBUG, "addD", "try %g / (%d*%d + %d*%d) = %g", amount, x, x, y, y, amount / (x*x + y*y));
+            //__android_log_print(ANDROID_LOG_DEBUG, "addD", "try pX*pX = %d, py*py = %d, radius*radius = %d", pX*pX, pY*pY, radius*radius);
 
-            if (x*x + y*y <= radius*radius)
-                sDensity[index(pX, pY)] += amount / (2 + x*x + y*y);
+            if (x*x + y*y <= 0.7*radius*radius)
+                sDensity[index(pX, pY)] += amount;
+            else if (x*x + y*y <= radius*radius)
+                sDensity[index(pX, pY)] += amount / (x*x + y*y);
 
-            __android_log_print(ANDROID_LOG_DEBUG, "addD", "is %g", sDensity[index(pX,pY)]);
-            __android_log_print(ANDROID_LOG_DEBUG, "addD", "__________________________________");
+            //__android_log_print(ANDROID_LOG_DEBUG, "addD", "is %g", sDensity[index(pX,pY)]);
+            //__android_log_print(ANDROID_LOG_DEBUG, "addD", "__________________________________");
 
         }
     }
@@ -179,6 +185,7 @@ void Fluid::addGravity(GLfloat gx, GLfloat gy) {
         }
     }
 }
+
 
 void Fluid::reset() {
     zeroFields();

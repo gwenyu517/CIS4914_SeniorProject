@@ -11,6 +11,10 @@
         android:id="@+id/fluidGLSurfaceView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/linearLayout2"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,42 +24,57 @@
         android:id="@+id/linearLayout2"
         android:layout_width="100dp"
         android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="209dp">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ToggleButton
             android:id="@+id/toggleButton_Milk"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.2"
-            android:background="#f00"
-            android:layout_marginRight="5dp"
-            android:text="ToggleButton"
-            android:textOff="add milk?"
-            android:textOn="adding choco" />
+            android:layout_height="60dp"
+            android:background="@drawable/toggle_milk"
+            android:text="@string/Add_milk"
+            android:textColor="@color/button_text"
+            android:textOff="@string/Add_milk"
+            android:textOn="@string/Add_milk"
+            tools:layout_editor_absoluteX="137dp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="0" />
 
         <ToggleButton
             android:id="@+id/toggleButton_Choco"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.2"
-            android:background="#000"
-            android:layout_marginRight="5dp"
-            android:text="ToggleButton"
-            android:textOff="add choco?"
-            android:textOn="adding choco" />
+            android:layout_height="60dp"
+            android:background="@drawable/toggle_choco"
+            android:fontFamily="@font/quicksand_medium"
+            android:text="@string/Add_choco"
+            android:textColor="@color/button_text"
+            android:textOff="@string/Add_choco"
+            android:textOn="@string/Add_choco" />
 
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="0" />
 
         <ToggleButton
             android:id="@+id/toggleButton_Stir"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.2"
-            android:background="#000"
-            android:layout_marginRight="5dp"
-            android:text="ToggleButton" />
-
+            android:layout_height="60dp"
+            android:background="@drawable/toggle_stir"
+            android:text="@string/Stir"
+            android:textColor="@color/button_text"
+            android:textOff="@string/Stir"
+            android:textOn="@string/Stir" />
+        <!--
         <ToggleButton
             android:id="@+id/toggleButton_Gravity"
             android:layout_width="match_parent"
@@ -64,15 +83,33 @@
             android:background="#f00"
             android:layout_marginRight="5dp"
             android:text="ToggleButton" />
+-->
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_weight="0" />
 
         <Button
             android:id="@+id/button_clear"
             android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/button_clear"
+            android:text="@string/Clear"
+            android:textColor="@color/button_text" />
+
+        <Space
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.2"
-            android:background="#000"
-            android:layout_marginRight="5dp"
-            android:text="Button" />
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/button_help"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/button_help"
+            android:text="@string/Help"
+            android:textColor="@color/button_text" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

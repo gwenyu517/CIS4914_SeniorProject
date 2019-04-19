@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">HealMe</string>
+    <string name="Help">Help</string>
+    <string name="Clear">Clear</string>
+    <string name="Add_milk">Add Milk</string>
+    <string name="Add_choco">Add\nChocolate</string>
+    <string name="Stir">Stir</string>
+
 </resources>
