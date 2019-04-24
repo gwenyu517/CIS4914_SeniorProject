@@ -1,5 +1,6 @@
 package com.sibuliao.healme;
 
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Point;
 import android.hardware.Sensor;
@@ -7,8 +8,13 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -27,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private ToggleButton stir;
 //    private ToggleButton gravity;
     private Button clear;
+    private Button help;
 /*
     private SensorManager sensorManager;
     private Sensor gravity_sensor;
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
         AssetManager assetManager = getAssets();
@@ -152,13 +160,19 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
 
 
     private void createButtons() {
+        createMilkButton();
+        createChocoButton();
+        createStirButton();
+        //createGravityButton();
+        createClearButton();
+        createHelpButton();
+
+        milk.setChecked(true);
+        //gravity.setChecked(false);
+    }
+
+    private void createMilkButton() {
         milk = (ToggleButton)findViewById(R.id.toggleButton_Milk);
-        choco = (ToggleButton)findViewById(R.id.toggleButton_Choco);
-        stir = (ToggleButton)findViewById(R.id.toggleButton_Stir);
-        //gravity = (ToggleButton)findViewById(R.id.toggleButton_Gravity);
-        clear = (Button)findViewById(R.id.button_clear);
-
-
         milk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -171,7 +185,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 }
             }
         });
+    }
 
+    private void createChocoButton() {
+        choco = (ToggleButton)findViewById(R.id.toggleButton_Choco);
         choco.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -184,7 +201,10 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 }
             }
         });
+    }
 
+    private void createStirButton() {
+        stir = (ToggleButton)findViewById(R.id.toggleButton_Stir);
         stir.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -197,8 +217,11 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 }
             }
         });
-
-/*        gravity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+    }
+/*
+    private void createGravityButton() {
+        gravity = (ToggleButton)findViewById(R.id.toggleButton_Gravity);
+        gravity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -210,17 +233,48 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 }
             }
         });
+    }
 */
+
+    private void createClearButton() {
+        clear = (Button)findViewById(R.id.button_clear);
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 glSurfaceView.clearCoffee();
             }
         });
-
-        milk.setChecked(true);
-        //gravity.setChecked(false);
     }
+
+    private void createHelpButton() {
+        help = (Button)findViewById(R.id.button_help);
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                InstructionFragment newFragment = new InstructionFragment();
+
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                transaction.add(android.R.id.content, newFragment).addToBackStack(null).commit();
+
+
+                /*AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater inflater = getLayoutInflater();
+                builder.setView(inflater.inflate(R.layout.instructions, null));
+                builder.setPositiveButton("wut", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();*/
+            }
+        });
+    }
+
+
 /*
     private void setUpGravitySensor() {
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);

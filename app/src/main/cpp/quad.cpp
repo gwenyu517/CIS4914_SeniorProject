@@ -26,7 +26,7 @@ static GLint dH = 8;    //10
 
 static Fluid* milk;
 static Fluid* choco;
-static GLfloat m_viscosity = 0.05;
+static GLfloat m_viscosity = 0.04; //0.05
 static GLfloat m_diffRate = 0;
 static GLfloat c_viscosity = 0.5;
 static GLfloat c_diffRate = 0;
@@ -240,7 +240,7 @@ void on_surface_created() {
 }
 
 void on_surface_changed(int width, int height) {
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "woooooooaaaaaaaahhhhhhhh there!!!");
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "woooooooaaaaaaaahhhhhhhh there!!!");
 
     glViewport (0, 0, width, height);
     eglGetCurrentContext();
@@ -274,7 +274,7 @@ void updateTextures() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "texture", "milk[5]'s alpha is...%d", milk_pixels[(4*(1*p_width + 1)) + 3]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "texture", "milk[5]'s alpha is...%d", milk_pixels[(4*(1*p_width + 1)) + 3]);
 
     //glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, textureID[1]);

@@ -34,46 +34,46 @@ Fluid::~Fluid() {
 void Fluid::updateVelocity(long dt) {
     int i = (int)100 / dH;
     int j = (int)100 / dH;
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity was, %g", u1->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity was, %g", u1->y[index(i+1,j+1)]);
 
     addSource(u1->x, sForce->x);
     addSource(u1->y, sForce->y);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity added to, %g", u1->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity added to, %g", u1->y[index(i+1,j+1)]);
 
     diffuse(u1->x, u0->x, viscosity, dt, 0);
     diffuse(u1->y, u0->y, viscosity, dt, 1);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity diffuse to, %g", u0->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity diffuse to, %g", u0->y[index(i+1,j+1)]);
 
 
     project(u0, u1);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity projected to, %g", u1->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity projected to, %g", u1->y[index(i+1,j+1)]);
 
 
     advect(u1->x, u0->x, u1->x, u1->y, dt, 0);
     advect(u1->y, u0->y, u1->x, u1->y, dt, 1);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity advect to, %g", u0->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity advect to, %g", u0->y[index(i+1,j+1)]);
 
 
     project(u0, u1);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity should now be, %g", u1->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER velocity should now be, %g", u1->y[index(i+1,j+1)]);
 
 }
 
 void Fluid::updateDensity(long dt) {
     int i = (int)100 / dH;
     int j = (int)100 / dH;
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density was, %g", s1[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density was, %g", s1[index(i+1,j+1)]);
 
     addSource(s1, sDensity);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density added to, %g", s1[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density added to, %g", s1[index(i+1,j+1)]);
 
     diffuse(s1, s0, diffRate, dt, 0);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density diffuse to, %g", s0[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density diffuse to, %g", s0[index(i+1,j+1)]);
 
     advect(s0, s1, u1->x, u1->y, dt, 0);
-    __android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density advect to, %g", s1[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "UPDATE", "-SOLVER density advect to, %g", s1[index(i+1,j+1)]);
 
 }
 
@@ -87,12 +87,15 @@ void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat siz
     //amountY = amountY*0.1;
 
     int radius = (int)(size * 100) / 2;
-    if (radius < 1)
-        radius = 1;
-    else
-        __android_log_print(ANDROID_LOG_DEBUG, "addD", "else! %d", radius);
+    if (radius < 1){
+        sForce->x[index(i+1, j+1)] += amountX;
+        sForce->y[index(i+1, j+1)] += amountY;
+        //radius = 1;
+        return;
+    }
 
-    __android_log_print(ANDROID_LOG_DEBUG, "addD", "welp! %d", radius);
+
+    //__android_log_print(ANDROID_LOG_DEBUG, "addD", "welp! %d", radius);
 
     int pX, pY;
 
@@ -109,7 +112,7 @@ void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat siz
             else if (pY > H - 2)
                 pY = H - 2;
 
-            __android_log_print(ANDROID_LOG_DEBUG, "addD", "try pX*pX = %d, py*py = %d, radius*radius = %d", pX*pX, pY*pY, radius*radius);
+            //__android_log_print(ANDROID_LOG_DEBUG, "addD", "try pX*pX = %d, py*py = %d, radius*radius = %d", pX*pX, pY*pY, radius*radius);
 
             if (x*x + y*y <= 0.5*radius*radius){
                 sForce->x[index(pX, pY)] += amountX;
@@ -121,15 +124,15 @@ void Fluid::addForce(int i, int j, GLfloat amountX, GLfloat amountY, GLfloat siz
 
             }
 
-            __android_log_print(ANDROID_LOG_DEBUG, "addF", "is %g", sDensity[index(pX,pY)]);
-            __android_log_print(ANDROID_LOG_DEBUG, "addF", "__________________________________");
+            //__android_log_print(ANDROID_LOG_DEBUG, "addF", "is %g", sDensity[index(pX,pY)]);
+            //__android_log_print(ANDROID_LOG_DEBUG, "addF", "__________________________________");
 
         }
     }
 
 
-    __android_log_print(ANDROID_LOG_DEBUG, "addF", "is %g", sForce->y[index(i+1,j+1)]);
-    __android_log_print(ANDROID_LOG_DEBUG, "addF", "__________________________");
+    //__android_log_print(ANDROID_LOG_DEBUG, "addF", "is %g", sForce->y[index(i+1,j+1)]);
+    //__android_log_print(ANDROID_LOG_DEBUG, "addF", "__________________________");
 
 }
 
@@ -141,8 +144,6 @@ void Fluid::addDensity(int i, int j, GLfloat amount, GLfloat size) {
     int radius = (int)(size * 100) / 2;
     if (radius < 1)
         radius = 1;
-    else
-        __android_log_print(ANDROID_LOG_DEBUG, "addD", "else! %d", radius);
 
     //__android_log_print(ANDROID_LOG_DEBUG, "addD", "welp! %d", radius);
 

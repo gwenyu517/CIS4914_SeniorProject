@@ -91,13 +91,19 @@ public class FluidGLSurfaceView extends GLSurfaceView {
                     case 0:         //none
                         break;
                     case 1:         //stir
-                        renderer.addForce(x0, y0, size*(x - x0), size*(y - y0), 0.5f*size);
+                        if (size < 0.03)
+                            renderer.addForce(x0, y0, 2*size*(x - x0), 2*size*(y - y0), 0.25f*size);
+                        else
+                            renderer.addForce(x0, y0, 2*size*(x - x0), 2*size*(y - y0), 0.5f*size);
                         break;
                     case 2:         //milk
-                        if (size > 0.04)
-                            renderer.addForce(x0, y0, 2*size*(x - x0), 2*size*(y - y0), 2*size);
-                        else
+                        if (size > 0.05)
+                            renderer.addForce(x0, y0, size*(x - x0), size*(y - y0), 2*size);
+                        else if (size < 0.03)
                             renderer.addForce(x0, y0, size*(x - x0), size*(y - y0), 0.5f*size);
+                        else
+                            renderer.addForce(x0, y0, size*(x - x0), size*(y - y0), size);
+
 
                         renderer.addDensity(x, y, 0.8f*255, mode, size);
                         break;

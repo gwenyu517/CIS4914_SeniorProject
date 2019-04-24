@@ -1,9 +1,17 @@
 <resources>
-    <string name="app_name">HealMe</string>
+    <string name="app_name">CaffeLatte</string>
     <string name="Help">Help</string>
     <string name="Clear">Clear</string>
     <string name="Add_milk">Add Milk</string>
     <string name="Add_choco">Add\nChocolate</string>
     <string name="Stir">Stir</string>
+    <string name="Okay">Okay</string>
+    <string name="Instructions">
+        Instructions:\n\n
+        Add milk or chocolate syrup to the coffee and stir\n
+        using the toggles on the right.\n\n
+        Design your own latte art or just play with fluid!\n
+        Express your creativity and have fun.
+    </string>
 
 </resources>
