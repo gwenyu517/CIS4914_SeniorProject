@@ -1,4 +1,4 @@
-package com.sibuliao.healme;
+package com.stableFluids.cafelatte;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
