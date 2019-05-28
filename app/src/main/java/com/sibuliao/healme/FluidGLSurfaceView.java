@@ -2,11 +2,9 @@ package com.sibuliao.healme;
 
 import android.graphics.Canvas;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.RectF;
 import android.opengl.GLSurfaceView;
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;

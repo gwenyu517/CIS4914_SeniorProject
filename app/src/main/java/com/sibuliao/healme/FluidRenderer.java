@@ -3,7 +3,6 @@ package com.sibuliao.healme;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
-import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
